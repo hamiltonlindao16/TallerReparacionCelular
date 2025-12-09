@@ -212,6 +212,11 @@ public class Equipo extends javax.swing.JPanel {
         });
 
         btnLimpiar.setText("Limpiar");
+        btnLimpiar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnLimpiarActionPerformed(evt);
+            }
+        });
 
         btnCerrar.setText("Cerrar");
         btnCerrar.addActionListener(new java.awt.event.ActionListener() {
@@ -266,7 +271,7 @@ public class Equipo extends javax.swing.JPanel {
                         .addComponent(btnEliminar)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnLimpiar)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGap(12, 12, 12)
                         .addComponent(btnCerrar)))
                 .addContainerGap(749, Short.MAX_VALUE))
         );
@@ -296,8 +301,8 @@ public class Equipo extends javax.swing.JPanel {
                 .addGap(10, 10, 10)
                 .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnRegistrar)
                     .addComponent(btnBuscarImei)
@@ -311,39 +316,63 @@ public class Equipo extends javax.swing.JPanel {
         add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1370, 650));
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnRegistrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegistrarActionPerformed
-        try {
-        EquipoEntidad nuevo = construirDesdeFormulario();
-        controlador.registrar(nuevo);
+    private void btnCerrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCerrarActionPerformed
+        this.setVisible(false);
+    }//GEN-LAST:event_btnCerrarActionPerformed
 
-        cargarTabla(controlador.listarTodos());
-        limpiarCampos();
+    private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
+        String imei = txtImei.getText().trim();
 
-        JOptionPane.showMessageDialog(
+        if (imei.isEmpty()) {
+            JOptionPane.showMessageDialog(
                 this,
-                "Equipo registrado correctamente.",
+                "Ingrese el IMEI del equipo a eliminar o búsquelo primero.",
+                "Aviso",
+                JOptionPane.WARNING_MESSAGE
+            );
+            return;
+        }
+
+        int opcion = JOptionPane.showConfirmDialog(
+            this,
+            "¿Seguro que desea eliminar el equipo con IMEI " + imei + "?",
+            "Confirmar eliminación",
+            JOptionPane.YES_NO_OPTION
+        );
+
+        if (opcion != JOptionPane.YES_OPTION) {
+            return;
+        }
+
+        try {
+            controlador.eliminarPorImei(imei);
+            cargarTabla(controlador.listarTodos());
+            limpiarCampos();
+
+            JOptionPane.showMessageDialog(
+                this,
+                "Equipo eliminado correctamente.",
                 "Éxito",
                 JOptionPane.INFORMATION_MESSAGE
-        );
-    } catch (Exception ex) {
-        JOptionPane.showMessageDialog(
+            );
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(
                 this,
                 ex.getMessage(),
                 "Error",
                 JOptionPane.ERROR_MESSAGE
-        );
-    }
-                                          
-    }//GEN-LAST:event_btnRegistrarActionPerformed
-
+            );
+        
+    }//GEN-LAST:event_btnEliminarActionPerformed
+}
     private void btnActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnActualizarActionPerformed
         int fila = TablaEquipo.getSelectedRow();
         if (fila == -1) {
             JOptionPane.showMessageDialog(
-                    this,
-                    "Primero selecciona un equipo en la tabla.",
-                    "Aviso",
-                    JOptionPane.WARNING_MESSAGE
+                this,
+                "Primero selecciona un equipo en la tabla.",
+                "Aviso",
+                JOptionPane.WARNING_MESSAGE
             );
             return;
         }
@@ -358,21 +387,20 @@ public class Equipo extends javax.swing.JPanel {
             limpiarCampos();
 
             JOptionPane.showMessageDialog(
-                    this,
-                    "Equipo actualizado correctamente.",
-                    "Éxito",
-                    JOptionPane.INFORMATION_MESSAGE
+                this,
+                "Equipo actualizado correctamente.",
+                "Éxito",
+                JOptionPane.INFORMATION_MESSAGE
             );
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(
-                    this,
-                    ex.getMessage(),
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE
+                this,
+                ex.getMessage(),
+                "Error",
+                JOptionPane.ERROR_MESSAGE
             );
         }
-    
-           
+
     }//GEN-LAST:event_btnActualizarActionPerformed
 
     private void btnBuscarImeiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarImeiActionPerformed
@@ -380,10 +408,10 @@ public class Equipo extends javax.swing.JPanel {
 
         if (imeiBuscado.isEmpty()) {
             JOptionPane.showMessageDialog(
-                    this,
-                    "Escribe un IMEI en el campo correspondiente.",
-                    "Aviso",
-                    JOptionPane.WARNING_MESSAGE
+                this,
+                "Escribe un IMEI en el campo correspondiente.",
+                "Aviso",
+                JOptionPane.WARNING_MESSAGE
             );
             return;
         }
@@ -392,10 +420,10 @@ public class Equipo extends javax.swing.JPanel {
 
         if (encontrado == null) {
             JOptionPane.showMessageDialog(
-                    this,
-                    "No se encontró ningún equipo con ese IMEI.",
-                    "Sin resultados",
-                    JOptionPane.INFORMATION_MESSAGE
+                this,
+                "No se encontró ningún equipo con ese IMEI.",
+                "Sin resultados",
+                JOptionPane.INFORMATION_MESSAGE
             );
             return;
         }
@@ -416,61 +444,38 @@ public class Equipo extends javax.swing.JPanel {
                 break;
             }
         }
-    
-         
+
     }//GEN-LAST:event_btnBuscarImeiActionPerformed
 
-    private void btnCerrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCerrarActionPerformed
-        this.setVisible(false);
+    private void btnRegistrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegistrarActionPerformed
+        try {
+            EquipoEntidad nuevo = construirDesdeFormulario();
+            controlador.registrar(nuevo);
 
-    }//GEN-LAST:event_btnCerrarActionPerformed
+            cargarTabla(controlador.listarTodos());
+            limpiarCampos();
 
-    private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
-        String imei = txtImei.getText().trim();
-
-    if (imei.isEmpty()) {
-        JOptionPane.showMessageDialog(
+            JOptionPane.showMessageDialog(
                 this,
-                "Ingrese el IMEI del equipo a eliminar o búsquelo primero.",
-                "Aviso",
-                JOptionPane.WARNING_MESSAGE
-        );
-        return;
-    }
-
-    int opcion = JOptionPane.showConfirmDialog(
-            this,
-            "¿Seguro que desea eliminar el equipo con IMEI " + imei + "?",
-            "Confirmar eliminación",
-            JOptionPane.YES_NO_OPTION
-    );
-
-    if (opcion != JOptionPane.YES_OPTION) {
-        return;
-    }
-
-    try {
-        controlador.eliminarPorImei(imei);
-        cargarTabla(controlador.listarTodos());
-        limpiarCampos();
-
-        JOptionPane.showMessageDialog(
-                this,
-                "Equipo eliminado correctamente.",
+                "Equipo registrado correctamente.",
                 "Éxito",
                 JOptionPane.INFORMATION_MESSAGE
-        );
-    } catch (Exception ex) {
-        JOptionPane.showMessageDialog(
+            );
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(
                 this,
                 ex.getMessage(),
                 "Error",
                 JOptionPane.ERROR_MESSAGE
-        );
-    
-                               
-    }//GEN-LAST:event_btnEliminarActionPerformed
-}
+            );
+        }
+
+    }//GEN-LAST:event_btnRegistrarActionPerformed
+
+    private void btnLimpiarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLimpiarActionPerformed
+        limpiarCampos();
+    }//GEN-LAST:event_btnLimpiarActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTable TablaEquipo;
